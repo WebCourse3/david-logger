@@ -1,3 +1,7 @@
+import WriteStream = NodeJS.WriteStream;
+
+var fs = require('fs');
+
 interface logInterface{
 	info(primaryMsg: string, moreDetails: any[]) :void
 	debug(primaryMsg: string, moreDetails: any[]) :void
@@ -22,10 +26,15 @@ interface configInterface {
 
 class logger implements logInterface{
 	name:string;
+	writeStream:WriteStream;
 	configuration:configInterface;
 	constructor(name:string, configuration:configInterface){
 		this.name = name;
 		this.configuration = configuration
+		if (configuration.file)
+		{
+			this.writeStream = fs.createWriteStream("c:/Users/Jbt/Desktop/david-logger/test.txt");
+		}
 	}
 
 	public info(msg:string, moreDetails?: any[]) :void {
@@ -61,13 +70,17 @@ class logger implements logInterface{
 					console.log(msg);
 				}
 			}
-		} else if (this.configuration.file){
+		}
 
+		if (this.configuration.file) {
+			fs.appendFile("c:/Users/Jbt/Desktop/david-logger/test.txt", msg + '\n', (err) => {
+				if (err) throw err;
+			});
 		}
 	}
 }
 
-let myLogger:logger = new logger("davids", {console:true, file:false, colors:true , logLevel:true});
+let myLogger:logger = new logger("david", {console:true, file:true, colors:true , logLevel:true});
 myLogger.info("INFO:");
 myLogger.debug("DEBUG:", ["cool", "ddd"]);
 myLogger.warn("WARN:", ["cool", "ddd"]);
