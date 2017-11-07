@@ -9,6 +9,13 @@ interface logInterface{
 	error(primaryMsg: string, moreDetails: any[]) :void
 }
 
+enum logLevels {
+	debug = "debug",
+	info = "info",
+	warn = "warn",
+	error = "error"
+}
+
 enum logColors{
 	"info" = '\x1b[32m%s\x1b[0m',
 	"warn" = '\x1b[31m%s\x1b[0m',
@@ -38,22 +45,22 @@ class logger implements logInterface{
 	}
 
 	public info(msg:string, moreDetails?: any[]) :void {
-		this.logMessage("info", msg, moreDetails);
+		this.logMessage(logLevels.info, msg, moreDetails);
 	}
 
 	public debug(msg:string, moreDetails?: any[]) :void {
-		this.logMessage("debug", msg, moreDetails);
+		this.logMessage(logLevels.debug, msg, moreDetails);
 	}
 
 	public warn(msg:string, moreDetails?: any[]) :void {
-		this.logMessage("warn", msg, moreDetails);
+		this.logMessage(logLevels.warn, msg, moreDetails);
 	}
 
 	public error(msg:string, moreDetails?: any[]) :void {
-		this.logMessage("error", msg, moreDetails);
+		this.logMessage(logLevels.error, msg, moreDetails);
 	}
 
-	private logMessage(msgLevel:"debug" | "info" | "warn" | "error", msg:string, moreDetails?: any[]):void {
+	private logMessage(msgLevel:logLevels, msg:string, moreDetails?: any[]):void {
 		if (this.configuration.console) {
 			if (this.configuration.logLevel) {
 				if (moreDetails) {
@@ -73,9 +80,16 @@ class logger implements logInterface{
 		}
 
 		if (this.configuration.file) {
-			fs.appendFile("c:/Users/Jbt/Desktop/david-logger/test.txt", msg + '\n', (err) => {
-				if (err) throw err;
-			});
+			if (moreDetails)
+			{
+				fs.appendFile("c:/Users/Jbt/Desktop/david-logger/test.txt", msg + moreDetails + '\r\n', (err) => {
+					if (err) throw err;
+				});
+			} else {
+				fs.appendFile("c:/Users/Jbt/Desktop/david-logger/test.txt", msg + '\r\n', (err) => {
+					if (err) throw err;
+				});
+			}
 		}
 	}
 }
