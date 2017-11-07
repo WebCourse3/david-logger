@@ -82,14 +82,12 @@ class logger implements logInterface{
 		if (this.configuration.file) {
 			if (moreDetails)
 			{
-				fs.appendFile("c:/Users/Jbt/Desktop/david-logger/test.txt", msg + moreDetails + '\r\n', (err) => {
-					if (err) throw err;
-				});
-			} else {
-				fs.appendFile("c:/Users/Jbt/Desktop/david-logger/test.txt", msg + '\r\n', (err) => {
-					if (err) throw err;
-				});
+				moreDetails.forEach(x=> msg += " " + x.toString())
 			}
+
+			fs.appendFile("c:/Users/Jbt/Desktop/david-logger/test.txt", msg + '\r\n', (err) => {
+				if (err) throw err;
+			});
 		}
 	}
 }
