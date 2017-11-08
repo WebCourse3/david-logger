@@ -14,7 +14,7 @@ class logger implements logInterface{
 		this.path = "c:/Users/Jbt/Desktop/david-logger/test.txt";
 	}
 
-	public cofigure(configuration:configInterface) :void {
+	public configure(configuration:configInterface) :void {
 		this.configuration = configuration;
 	}
 
@@ -35,36 +35,27 @@ class logger implements logInterface{
 	}
 
 	private logMessage(msgLevel:logLevels, msg:string, moreDetails?: any[]):void {
-		if (this.configuration.logLevel){
-			msg = msgLevel + ": " + msg;
-		}
+		if(moreDetails)
+			msg = this.addDetailsToMsg(msg, moreDetails);
 
-		if (this.configuration.console) {
-			if (this.configuration.colors) {
-				if (moreDetails) {
-					console.log(logColors[msgLevel] ,msg, moreDetails);
-				}
-				else {
-					console.log(logColors[msgLevel] ,msg);
-				}
-			} else {
-				if (moreDetails) {
-					console.log(msg, moreDetails);
-				}
-				else {
-					console.log(msg);
-				}
-			}
-		}
+		if(this.configuration.logLevel)
+			msg = this.addLevelToMsg(msg, msgLevel);
 
-		if (this.configuration.file) {
-			if (moreDetails)
-			{
-				moreDetails.forEach(x=> msg += " " + x.toString())
-			}
+		if (this.configuration.console)
+			this.configuration.colors ? console.log(logColors[msgLevel] ,msg) : console.log(msg);
 
+		if (this.configuration.file)
 			this.logToFile(msg);
-		}
+
+	}
+
+	private addLevelToMsg(msg:string, msgLevel:logLevels):string{
+		return msgLevel + ": " + msg;
+	}
+
+	private addDetailsToMsg(msg:string, moreDetails:any[]):string {
+		moreDetails.forEach(x=> msg += " " + x.toString());
+		return msg;
 	}
 
 	private logToFile(msg:string) :void {
@@ -78,5 +69,5 @@ let myLogger:logger = new logger("david", {console:true, file:false, colors:true
 myLogger.info("This is some info");
 myLogger.debug("Im debugging here!", ["some", "params"]);
 myLogger.warn("Im warning you!", [1, 2]);
-myLogger.cofigure({console:true, file:true, colors:true , logLevel:true});
+myLogger.configure({console:true, file:true, colors:true , logLevel:true});
 myLogger.error("An error has occurred at file:", [__filename]);
